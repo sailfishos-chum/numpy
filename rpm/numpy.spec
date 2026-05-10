@@ -44,6 +44,8 @@ BuildRequires:  python3-devel >= 3.11
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-cython
 BuildRequires:  pyproject-rpm-macros
+BuildRequires:  python3dist(pip) >= 19
+BuildRequires:  python3dist(toml)
 #BuildRequires:  python3-pytest
 #BuildRequires:  gcc-gfortran gcc
 #BuildRequires:  openblas-devel
