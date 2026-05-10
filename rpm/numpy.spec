@@ -21,7 +21,7 @@ Source0:        %{name}-%{version}.tar.gz
 # See:
 # https://github.com/numpy/numpy/pull/23709
 # https://github.com/numpy/numpy/issues/24330
-Patch0:         23709.patch
+Patch0:         numpy-1.18.5-noexcept.patch
 
 %description
 NumPy is a general-purpose array-processing package designed to
