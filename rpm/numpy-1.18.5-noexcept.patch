@@ -68,6 +68,19 @@ index ef1afac7c5..4dcf83d7a2 100644
      cdef double c, y, t, sum
      cdef np.npy_intp i
      sum = darr[0]
+diff --git a/numpy/random/_generator.pyx b/numpy/random/_generator.pyx
+index 7bfa8e1c09..0702d54873 100644
+--- a/numpy/random/_generator.pyx
++++ b/numpy/random/_generator.pyx
+@@ -4276,7 +4276,7 @@ cdef class Generator:
+             string.memcpy(data + i * stride, buf, itemsize)
+ 
+     cdef inline void _shuffle_int(self, np.npy_intp n, np.npy_intp first,
+-                             int64_t* data) nogil:
++                             int64_t* data) noexcept nogil:
+         """
+         Parameters
+         ----------
 diff --git a/numpy/random/_mt19937.pyx b/numpy/random/_mt19937.pyx
 index 919a96a4c4..2155e2330d 100644
 --- a/numpy/random/_mt19937.pyx
