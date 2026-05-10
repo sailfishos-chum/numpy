@@ -43,6 +43,7 @@ Provides:       libnpymath-static%{?_isa} = %{version}-%{release}
 BuildRequires:  python3-devel >= 3.11
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-cython
+BuildRequires:  pyproject-rpm-macros
 #BuildRequires:  python3-pytest
 #BuildRequires:  gcc-gfortran gcc
 #BuildRequires:  openblas-devel
@@ -68,14 +69,17 @@ Provides:       python3-f2py = %{version}-%{release}
 %description -n python3-numpy-f2py
 This package includes a version of f2py that works properly with NumPy.
 
+%generate_buildrequires
+%pyproject_buildrequires
+
 %prep
 %autosetup -p1 -n %{name}-%{version}/%{name}
 
 %build
-%{__python3} setup.py build
+%pyproject_wheel
 
 %install
-%{__python3} setup.py install --root %{buildroot}
+%pyproject_install
 
 pushd %{buildroot}%{_bindir} &> /dev/null
 ln -s f2py3 f2py.numpy
