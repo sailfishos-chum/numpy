@@ -46,6 +46,7 @@ BuildRequires:  python3-cython
 BuildRequires:  pyproject-rpm-macros
 BuildRequires:  python3dist(pip) >= 19
 BuildRequires:  python3dist(toml)
+BuildRequires:  meson
 #BuildRequires:  python3-pytest
 #BuildRequires:  gcc-gfortran gcc
 #BuildRequires:  openblas-devel
