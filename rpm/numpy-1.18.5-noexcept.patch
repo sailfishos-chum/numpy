@@ -144,7 +144,7 @@ index 05d27db5c8..2864460b7f 100644
  
  
 diff --git a/numpy/random/_philox.pyx b/numpy/random/_philox.pyx
-index 7e88804904..ebda30f971 100644
+index 7e88804904..542d3c42d8 100644
 --- a/numpy/random/_philox.pyx
 +++ b/numpy/random/_philox.pyx
 @@ -41,19 +41,19 @@ cdef extern from 'src/philox/philox.h':
@@ -162,15 +162,15 @@ index 7e88804904..ebda30f971 100644
  
  
 -cdef uint64_t philox_uint64(void*st) nogil:
-+cdef uint64_t philox_uint64(void*st) noecept nogil:
++cdef uint64_t philox_uint64(void*st) noexcept nogil:
      return philox_next64(<philox_state *> st)
  
 -cdef uint32_t philox_uint32(void *st) nogil:
-+cdef uint32_t philox_uint32(void *st) noecept nogil:
++cdef uint32_t philox_uint32(void *st) noexcept nogil:
      return philox_next32(<philox_state *> st)
  
 -cdef double philox_double(void*st) nogil:
-+cdef double philox_double(void*st) noecept nogil:
++cdef double philox_double(void*st) noexcept nogil:
      return uint64_to_double(philox_next64(<philox_state *> st))
  
  cdef class Philox(BitGenerator):
