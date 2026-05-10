@@ -1,0 +1,333 @@
+From 3e4a6cba2da27bbe2a6e12c163238e503c9f6a07 Mon Sep 17 00:00:00 2001
+From: Stefan Behnel <stefan_ml@behnel.de>
+Date: Thu, 4 May 2023 09:18:16 +0200
+Subject: [PATCH 1/4] Add "noexcept" markers to functions that do not raise
+ exceptions.
+
+---
+ numpy/random/_common.pxd  | 40 +++++++++++++++++++--------------------
+ numpy/random/_mt19937.pyx |  8 ++++----
+ numpy/random/_pcg64.pyx   | 22 ++++++++++-----------
+ numpy/random/_philox.pyx  | 14 +++++++-------
+ numpy/random/_sfc64.pyx   |  6 +++---
+ 5 files changed, 45 insertions(+), 45 deletions(-)
+
+diff --git a/numpy/random/_common.pxd b/numpy/random/_common.pxd
+index 4f404b7a11e3..579cb8f2089b 100644
+--- a/numpy/random/_common.pxd
++++ b/numpy/random/_common.pxd
+@@ -39,32 +39,32 @@ cdef extern from "include/aligned_malloc.h":
+     cdef void *PyArray_calloc_aligned(size_t n, size_t s)
+     cdef void PyArray_free_aligned(void *p)
+ 
+-ctypedef double (*random_double_fill)(bitgen_t *state, np.npy_intp count, double* out) nogil
+-ctypedef double (*random_double_0)(void *state) nogil
+-ctypedef double (*random_double_1)(void *state, double a) nogil
+-ctypedef double (*random_double_2)(void *state, double a, double b) nogil
+-ctypedef double (*random_double_3)(void *state, double a, double b, double c) nogil
++ctypedef double (*random_double_fill)(bitgen_t *state, np.npy_intp count, double* out)  noexcept nogil
++ctypedef double (*random_double_0)(void *state)  noexcept nogil
++ctypedef double (*random_double_1)(void *state, double a)  noexcept nogil
++ctypedef double (*random_double_2)(void *state, double a, double b)  noexcept nogil
++ctypedef double (*random_double_3)(void *state, double a, double b, double c)  noexcept nogil
+ 
+-ctypedef double (*random_float_fill)(bitgen_t *state, np.npy_intp count, float* out) nogil
+-ctypedef float (*random_float_0)(bitgen_t *state) nogil
+-ctypedef float (*random_float_1)(bitgen_t *state, float a) nogil
++ctypedef double (*random_float_fill)(bitgen_t *state, np.npy_intp count, float* out)  noexcept nogil
++ctypedef float (*random_float_0)(bitgen_t *state)  noexcept nogil
++ctypedef float (*random_float_1)(bitgen_t *state, float a)  noexcept nogil
+ 
+-ctypedef int64_t (*random_uint_0)(void *state) nogil
+-ctypedef int64_t (*random_uint_d)(void *state, double a) nogil
+-ctypedef int64_t (*random_uint_dd)(void *state, double a, double b) nogil
+-ctypedef int64_t (*random_uint_di)(void *state, double a, uint64_t b) nogil
+-ctypedef int64_t (*random_uint_i)(void *state, int64_t a) nogil
+-ctypedef int64_t (*random_uint_iii)(void *state, int64_t a, int64_t b, int64_t c) nogil
++ctypedef int64_t (*random_uint_0)(void *state)  noexcept nogil
++ctypedef int64_t (*random_uint_d)(void *state, double a)  noexcept nogil
++ctypedef int64_t (*random_uint_dd)(void *state, double a, double b)  noexcept nogil
++ctypedef int64_t (*random_uint_di)(void *state, double a, uint64_t b)  noexcept nogil
++ctypedef int64_t (*random_uint_i)(void *state, int64_t a)  noexcept nogil
++ctypedef int64_t (*random_uint_iii)(void *state, int64_t a, int64_t b, int64_t c)  noexcept nogil
+ 
+-ctypedef uint32_t (*random_uint_0_32)(bitgen_t *state) nogil
+-ctypedef uint32_t (*random_uint_1_i_32)(bitgen_t *state, uint32_t a) nogil
++ctypedef uint32_t (*random_uint_0_32)(bitgen_t *state)  noexcept nogil
++ctypedef uint32_t (*random_uint_1_i_32)(bitgen_t *state, uint32_t a)  noexcept nogil
+ 
+-ctypedef int32_t (*random_int_2_i_32)(bitgen_t *state, int32_t a, int32_t b) nogil
+-ctypedef int64_t (*random_int_2_i)(bitgen_t *state, int64_t a, int64_t b) nogil
++ctypedef int32_t (*random_int_2_i_32)(bitgen_t *state, int32_t a, int32_t b)  noexcept nogil
++ctypedef int64_t (*random_int_2_i)(bitgen_t *state, int64_t a, int64_t b)  noexcept nogil
+ 
+-cdef double kahan_sum(double *darr, np.npy_intp n)
++cdef double kahan_sum(double *darr, np.npy_intp n) noexcept
+ 
+-cdef inline double uint64_to_double(uint64_t rnd) nogil:
++cdef inline double uint64_to_double(uint64_t rnd) noexcept nogil:
+     return (rnd >> 11) * (1.0 / 9007199254740992.0)
+ 
+ cdef object double_fill(void *func, bitgen_t *state, object size, object lock, object out)
+diff --git a/numpy/random/_mt19937.pyx b/numpy/random/_mt19937.pyx
+index 16a377cc63b9..400584ce1c51 100644
+--- a/numpy/random/_mt19937.pyx
++++ b/numpy/random/_mt19937.pyx
+@@ -28,16 +28,16 @@ cdef extern from "src/mt19937/mt19937.h":
+     enum:
+         RK_STATE_LEN
+ 
+-cdef uint64_t mt19937_uint64(void *st) nogil:
++cdef uint64_t mt19937_uint64(void *st) noexcept nogil:
+     return mt19937_next64(<mt19937_state *> st)
+ 
+-cdef uint32_t mt19937_uint32(void *st) nogil:
++cdef uint32_t mt19937_uint32(void *st) noexcept nogil:
+     return mt19937_next32(<mt19937_state *> st)
+ 
+-cdef double mt19937_double(void *st) nogil:
++cdef double mt19937_double(void *st) noexcept nogil:
+     return mt19937_next_double(<mt19937_state *> st)
+ 
+-cdef uint64_t mt19937_raw(void *st) nogil:
++cdef uint64_t mt19937_raw(void *st) noexcept nogil:
+     return <uint64_t>mt19937_next32(<mt19937_state *> st)
+ 
+ cdef class MT19937(BitGenerator):
+diff --git a/numpy/random/_pcg64.pyx b/numpy/random/_pcg64.pyx
+index 605aae4bcb21..4e6f5fa1e1ec 100644
+--- a/numpy/random/_pcg64.pyx
++++ b/numpy/random/_pcg64.pyx
+@@ -18,21 +18,21 @@ cdef extern from "src/pcg64/pcg64.h":
+ 
+     ctypedef s_pcg64_state pcg64_state
+ 
+-    uint64_t pcg64_next64(pcg64_state *state)  nogil
+-    uint32_t pcg64_next32(pcg64_state *state)  nogil
+-    void pcg64_jump(pcg64_state *state)
+-    void pcg64_advance(pcg64_state *state, uint64_t *step)
+-    void pcg64_set_seed(pcg64_state *state, uint64_t *seed, uint64_t *inc)
+-    void pcg64_get_state(pcg64_state *state, uint64_t *state_arr, int *has_uint32, uint32_t *uinteger)
+-    void pcg64_set_state(pcg64_state *state, uint64_t *state_arr, int has_uint32, uint32_t uinteger)
+-
+-cdef uint64_t pcg64_uint64(void* st) nogil:
++    uint64_t pcg64_next64(pcg64_state *state)  noexcept nogil
++    uint32_t pcg64_next32(pcg64_state *state)  noexcept nogil
++    void pcg64_jump(pcg64_state *state)  noexcept
++    void pcg64_advance(pcg64_state *state, uint64_t *step)  noexcept
++    void pcg64_set_seed(pcg64_state *state, uint64_t *seed, uint64_t *inc)  noexcept
++    void pcg64_get_state(pcg64_state *state, uint64_t *state_arr, int *has_uint32, uint32_t *uinteger)  noexcept
++    void pcg64_set_state(pcg64_state *state, uint64_t *state_arr, int has_uint32, uint32_t uinteger)  noexcept
++
++cdef uint64_t pcg64_uint64(void* st) noexcept nogil:
+     return pcg64_next64(<pcg64_state *>st)
+ 
+-cdef uint32_t pcg64_uint32(void *st) nogil:
++cdef uint32_t pcg64_uint32(void *st) noexcept nogil:
+     return pcg64_next32(<pcg64_state *> st)
+ 
+-cdef double pcg64_double(void* st) nogil:
++cdef double pcg64_double(void* st) noexcept nogil:
+     return uint64_to_double(pcg64_next64(<pcg64_state *>st))
+ 
+ 
+diff --git a/numpy/random/_philox.pyx b/numpy/random/_philox.pyx
+index 7e88804904a6..57ce37fa8e22 100644
+--- a/numpy/random/_philox.pyx
++++ b/numpy/random/_philox.pyx
+@@ -41,19 +41,19 @@ cdef extern from 'src/philox/philox.h':
+ 
+     ctypedef s_philox_state philox_state
+ 
+-    uint64_t philox_next64(philox_state *state)  nogil
+-    uint32_t philox_next32(philox_state *state)  nogil
+-    void philox_jump(philox_state *state)
+-    void philox_advance(uint64_t *step, philox_state *state)
++    uint64_t philox_next64(philox_state *state)  noexcept nogil
++    uint32_t philox_next32(philox_state *state)  noexcept nogil
++    void philox_jump(philox_state *state)  noexcept
++    void philox_advance(uint64_t *step, philox_state *state)  noexcept
+ 
+ 
+-cdef uint64_t philox_uint64(void*st) nogil:
++cdef uint64_t philox_uint64(void*st) noexcept nogil:
+     return philox_next64(<philox_state *> st)
+ 
+-cdef uint32_t philox_uint32(void *st) nogil:
++cdef uint32_t philox_uint32(void *st) noexcept nogil:
+     return philox_next32(<philox_state *> st)
+ 
+-cdef double philox_double(void*st) nogil:
++cdef double philox_double(void*st) noexcept nogil:
+     return uint64_to_double(philox_next64(<philox_state *> st))
+ 
+ cdef class Philox(BitGenerator):
+diff --git a/numpy/random/_sfc64.pyx b/numpy/random/_sfc64.pyx
+index 1daee34f8635..419045c1d32f 100644
+--- a/numpy/random/_sfc64.pyx
++++ b/numpy/random/_sfc64.pyx
+@@ -21,13 +21,13 @@ cdef extern from "src/sfc64/sfc64.h":
+     void sfc64_set_state(sfc64_state *state, uint64_t *state_arr, int has_uint32, uint32_t uinteger)
+ 
+ 
+-cdef uint64_t sfc64_uint64(void* st) nogil:
++cdef uint64_t sfc64_uint64(void* st) noexcept nogil:
+     return sfc64_next64(<sfc64_state *>st)
+ 
+-cdef uint32_t sfc64_uint32(void *st) nogil:
++cdef uint32_t sfc64_uint32(void *st) noexcept nogil:
+     return sfc64_next32(<sfc64_state *> st)
+ 
+-cdef double sfc64_double(void* st) nogil:
++cdef double sfc64_double(void* st) noexcept nogil:
+     return uint64_to_double(sfc64_next64(<sfc64_state *>st))
+ 
+ 
+
+From 4ff6f470cf53a77a04dbec7f333a844ac3474a0c Mon Sep 17 00:00:00 2001
+From: Stefan Behnel <stefan_ml@behnel.de>
+Date: Thu, 4 May 2023 09:33:20 +0200
+Subject: [PATCH 2/4] Revert useless changes.
+
+---
+ numpy/random/_pcg64.pyx  | 22 +++++++++++-----------
+ numpy/random/_philox.pyx |  8 ++++----
+ 2 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/numpy/random/_pcg64.pyx b/numpy/random/_pcg64.pyx
+index a2242a16b340..dee38c039f70 100644
+--- a/numpy/random/_pcg64.pyx
++++ b/numpy/random/_pcg64.pyx
+@@ -18,17 +18,17 @@ cdef extern from "src/pcg64/pcg64.h":
+ 
+     ctypedef s_pcg64_state pcg64_state
+ 
+-    uint64_t pcg64_next64(pcg64_state *state)  noexcept nogil
+-    uint32_t pcg64_next32(pcg64_state *state)  noexcept nogil
+-    void pcg64_jump(pcg64_state *state)  noexcept
+-    void pcg64_advance(pcg64_state *state, uint64_t *step)  noexcept
+-    void pcg64_set_seed(pcg64_state *state, uint64_t *seed, uint64_t *inc)  noexcept
+-    void pcg64_get_state(pcg64_state *state, uint64_t *state_arr, int *has_uint32, uint32_t *uinteger)  noexcept
+-    void pcg64_set_state(pcg64_state *state, uint64_t *state_arr, int has_uint32, uint32_t uinteger)  noexcept
+-
+-    uint64_t pcg64_cm_next64(pcg64_state *state)  noexcept nogil
+-    uint32_t pcg64_cm_next32(pcg64_state *state)  noexcept nogil
+-    void pcg64_cm_advance(pcg64_state *state, uint64_t *step)  noexcept
++    uint64_t pcg64_next64(pcg64_state *state)  nogil
++    uint32_t pcg64_next32(pcg64_state *state)  nogil
++    void pcg64_jump(pcg64_state *state)
++    void pcg64_advance(pcg64_state *state, uint64_t *step)
++    void pcg64_set_seed(pcg64_state *state, uint64_t *seed, uint64_t *inc)
++    void pcg64_get_state(pcg64_state *state, uint64_t *state_arr, int *has_uint32, uint32_t *uinteger)
++    void pcg64_set_state(pcg64_state *state, uint64_t *state_arr, int has_uint32, uint32_t uinteger)
++
++    uint64_t pcg64_cm_next64(pcg64_state *state)  nogil
++    uint32_t pcg64_cm_next32(pcg64_state *state)  nogil
++    void pcg64_cm_advance(pcg64_state *state, uint64_t *step)
+ 
+ cdef uint64_t pcg64_uint64(void* st) noexcept nogil:
+     return pcg64_next64(<pcg64_state *>st)
+diff --git a/numpy/random/_philox.pyx b/numpy/random/_philox.pyx
+index e2acbcfbc908..e0c0504f686a 100644
+--- a/numpy/random/_philox.pyx
++++ b/numpy/random/_philox.pyx
+@@ -36,10 +36,10 @@ cdef extern from 'src/philox/philox.h':
+ 
+     ctypedef s_philox_state philox_state
+ 
+-    uint64_t philox_next64(philox_state *state)  noexcept nogil
+-    uint32_t philox_next32(philox_state *state)  noexcept nogil
+-    void philox_jump(philox_state *state)  noexcept
+-    void philox_advance(uint64_t *step, philox_state *state)  noexcept
++    uint64_t philox_next64(philox_state *state)  nogil
++    uint32_t philox_next32(philox_state *state)  nogil
++    void philox_jump(philox_state *state)
++    void philox_advance(uint64_t *step, philox_state *state)
+ 
+ 
+ cdef uint64_t philox_uint64(void*st) noexcept nogil:
+
+From 6aca5f6552225a097cb23c875f2b18de86ca7f39 Mon Sep 17 00:00:00 2001
+From: Stefan Behnel <stefan_ml@behnel.de>
+Date: Thu, 4 May 2023 09:35:21 +0200
+Subject: [PATCH 3/4] Also annotate the implementation of the kahan_sum()
+ function, not just the declaration.
+
+---
+ numpy/random/_common.pyx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/numpy/random/_common.pyx b/numpy/random/_common.pyx
+index 7b6f693037fb..c5e4e32973e9 100644
+--- a/numpy/random/_common.pyx
++++ b/numpy/random/_common.pyx
+@@ -171,7 +171,7 @@ cdef object prepare_ctypes(bitgen_t *bitgen):
+                         ctypes.c_void_p(<uintptr_t>bitgen))
+     return _ctypes
+ 
+-cdef double kahan_sum(double *darr, np.npy_intp n):
++cdef double kahan_sum(double *darr, np.npy_intp n) noexcept:
+     """
+     Parameters
+     ----------
+
+From 2df3b4c26bda892701741a331ad62ba6333446f0 Mon Sep 17 00:00:00 2001
+From: Stefan Behnel <stefan_ml@behnel.de>
+Date: Thu, 4 May 2023 10:23:03 +0200
+Subject: [PATCH 4/4] MAINT: Update Cython dependency to 0.29.34 (latest
+ 0.29.x).
+
+---
+ .github/workflows/build_test.yml | 2 +-
+ build_requirements.txt           | 2 +-
+ pyproject.toml                   | 2 +-
+ test_requirements.txt            | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/.github/workflows/build_test.yml b/.github/workflows/build_test.yml
+index d34b43651a4b..f52c4f3d7fe1 100644
+--- a/.github/workflows/build_test.yml
++++ b/.github/workflows/build_test.yml
+@@ -365,7 +365,7 @@ jobs:
+         docker run --name the_container --interactive -v /:/host arm32v7/ubuntu:22.04 /bin/bash -c "
+           apt update &&
+           apt install -y git python3 python3-dev python3-pip  &&
+-          python3 -m pip install cython==0.29.30 setuptools\<49.2.0 hypothesis==6.23.3 pytest==6.2.5 'typing_extensions>=4.2.0' &&
++          python3 -m pip install cython==0.29.34 setuptools\<49.2.0 hypothesis==6.23.3 pytest==6.2.5 'typing_extensions>=4.2.0' &&
+           ln -s /host/lib64 /lib64 &&
+           ln -s /host/lib/x86_64-linux-gnu /lib/x86_64-linux-gnu &&
+           ln -s /host/usr/arm-linux-gnueabihf /usr/arm-linux-gnueabihf &&
+diff --git a/build_requirements.txt b/build_requirements.txt
+index 075d454f2ff9..de57da2793bb 100644
+--- a/build_requirements.txt
++++ b/build_requirements.txt
+@@ -1,5 +1,5 @@
+ meson-python>=0.10.0
+-Cython>=0.29.30,<3.0
++Cython>=0.29.34,<3.0
+ wheel==0.38.1
+ ninja
+ spin==0.3
+diff --git a/pyproject.toml b/pyproject.toml
+index 903a99bcafc4..759b538fb6e1 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -9,7 +9,7 @@ requires = [
+     # doesn't list it as a runtime requirement (at least in 0.11.0) - it's
+     # likely to be removed as a dependency in meson-python 0.12.0.
+     "wheel==0.38.1",
+-    "Cython>=0.29.30,<3.0",
++    "Cython>=0.29.34,<3.0",
+ #    "meson-python>=0.10.0",
+ ]
+ 
+diff --git a/test_requirements.txt b/test_requirements.txt
+index b8508f1618f4..16f448eb8066 100644
+--- a/test_requirements.txt
++++ b/test_requirements.txt
+@@ -1,4 +1,4 @@
+-cython>=0.29.30,<3.0
++cython>=0.29.34,<3.0
+ wheel==0.38.1
+ setuptools==59.2.0
+ hypothesis==6.24.1

@@ -18,6 +18,10 @@ Summary:        A fast multidimensional array facility for Python
 License:        BSD and Python and ASL 2.0
 URL:            http://www.numpy.org/
 Source0:        %{name}-%{version}.tar.gz
+# See:
+# https://github.com/numpy/numpy/pull/23709
+# https://github.com/numpy/numpy/issues/24330
+Patch0:         23709.patch
 
 %description
 NumPy is a general-purpose array-processing package designed to
@@ -69,7 +73,7 @@ Provides:       python3-f2py = %{version}-%{release}
 This package includes a version of f2py that works properly with NumPy.
 
 %prep
-%autosetup -n %{name}-%{version}/%{name}
+%autosetup -p1 -n %{name}-%{version}/%{name}
 
 %build
 %{__python3} setup.py build
