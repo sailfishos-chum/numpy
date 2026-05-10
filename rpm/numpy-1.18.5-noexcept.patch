@@ -69,15 +69,9 @@ index ef1afac7c5..4dcf83d7a2 100644
      cdef np.npy_intp i
      sum = darr[0]
 diff --git a/numpy/random/_mt19937.pyx b/numpy/random/_mt19937.pyx
-index 919a96a4c4..cdaa0beda9 100644
+index 919a96a4c4..2155e2330d 100644
 --- a/numpy/random/_mt19937.pyx
 +++ b/numpy/random/_mt19937.pyx
-@@ -1,4 +1,4 @@
--import operator
-+impor operator
- 
- import numpy as np
- cimport numpy as np
 @@ -28,16 +28,16 @@ cdef extern from "src/mt19937/mt19937.h":
      enum:
          RK_STATE_LEN
