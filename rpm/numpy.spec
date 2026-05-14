@@ -10,7 +10,7 @@
 %endif
 
 Name:           numpy
-Version:        1.18.5
+Version:        1.26.4
 Release:        1
 Summary:        A fast multidimensional array facility for Python
 
@@ -40,7 +40,7 @@ License:        BSD
 Provides:       libnpymath-static = %{version}-%{release}
 Provides:       libnpymath-static%{?_isa} = %{version}-%{release}
 
-BuildRequires:  python3-devel
+BuildRequires:  python3-devel >= 3.9
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-cython
 #BuildRequires:  python3-pytest
