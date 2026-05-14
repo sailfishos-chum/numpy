@@ -10,7 +10,7 @@
 %endif
 
 Name:           numpy
-Version:        1.18.5
+Version:        1.26.4
 Release:        1
 Summary:        A fast multidimensional array facility for Python
 
@@ -40,7 +40,7 @@ License:        BSD
 Provides:       libnpymath-static = %{version}-%{release}
 Provides:       libnpymath-static%{?_isa} = %{version}-%{release}
 
-BuildRequires:  python3-devel
+BuildRequires:  python3-devel >= 3.9
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-cython
 #BuildRequires:  python3-pytest
@@ -106,6 +106,16 @@ ln -s %{python3_sitearch}/%{name}/core/include/numpy/ %{buildroot}%{_includedir}
 %{python3_sitearch}/%{name}/matrixlib
 %{python3_sitearch}/%{name}/polynomial
 %{python3_sitearch}/%{name}-*.egg-info
+# >> added in newer versions:
+%{python3_sitearch}/%{name}/*.pxd
+%{python3_sitearch}/%{name}/_core
+%{python3_sitearch}/%{name}/_pyinstaller
+%{python3_sitearch}/%{name}/_typing
+%{python3_sitearch}/%{name}/_utils
+%{python3_sitearch}/%{name}/py.typed
+%{python3_sitearch}/%{name}/array_api
+%{python3_sitearch}/%{name}/typing
+# << added in newer versions:
 %exclude %{python3_sitearch}/%{name}/LICENSE.txt
 %{_includedir}/numpy
 
