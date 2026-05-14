@@ -106,6 +106,16 @@ ln -s %{python3_sitearch}/%{name}/core/include/numpy/ %{buildroot}%{_includedir}
 %{python3_sitearch}/%{name}/matrixlib
 %{python3_sitearch}/%{name}/polynomial
 %{python3_sitearch}/%{name}-*.egg-info
+# >> added in newer versions:
+%{python3_sitearch}/%{name}/*.pxd
+%{python3_sitearch}/%{name}/_core
+%{python3_sitearch}/%{name}/_pyinstaller
+%{python3_sitearch}/%{name}/_typing
+%{python3_sitearch}/%{name}/_utils
+%{python3_sitearch}/%{name}/py.typed
+%{python3_sitearch}/%{name}/array_api
+%{python3_sitearch}/%{name}/typing
+# << added in newer versions:
 %exclude %{python3_sitearch}/%{name}/LICENSE.txt
 %{_includedir}/numpy
 
